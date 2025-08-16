@@ -63,7 +63,30 @@ async function obtenerDatosCenso(codigoMunicipio) {
     }
 }
 
-// Función para mostrar los datos en el HTML de forma organizada
+// --- FUNCIÓN PARA DAR FORMATO A LOS NÚMEROS (FINAL) ---
+function formatearValor(key, value) {
+    const num = parseFloat(value);
+    
+    if (isNaN(num)) {
+        return value;
+    }
+    
+    // Formato para números enteros grandes (población, hogares, etc.)
+    if (key.includes('total') || key.includes('pob_') || key.includes('viviendas') || key.includes('lugares')) {
+        // Usamos 'en-US' para el formato de coma de millar y sin decimales
+        return Math.round(num).toLocaleString('en-US');
+    }
+    
+    // Formato para porcentajes, promedios e índices (con 2 decimales)
+    if (key.includes('porc_') || key.includes('prom_') || key.includes('indice_') || key.includes('edad_')) {
+        return num.toFixed(2).toLocaleString('en-US') + '';
+    }
+    
+    return value;
+}
+
+
+// --- FUNCIÓN PARA MOSTRAR LOS DATOS (CORREGIDA) ---
 function mostrarDatos(data) {
     datosCensoDiv.innerHTML = ''; 
 
@@ -76,36 +99,36 @@ function mostrarDatos(data) {
     
     const gruposDeDatos = {
         "Población": {
-            "Población total": data["pob_total"],
-            "Población masculina": data["total_sexo_hombre"],
-            "Población femenina": data["total_sexo_mujeres"],
-            "Porcentaje de hombres": data["porc_sexo_hombre"],
-            "Porcentaje de mujeres": data["porc_sexo_mujeres"]
+            "Población total": formatearValor('pob_total', data["pob_total"]),
+            "Población masculina": formatearValor('total_sexo_hombre', data["total_sexo_hombre"]),
+            "Población femenina": formatearValor('total_sexo_mujeres', data["total_sexo_mujeres"]),
+            "Porcentaje de hombres": formatearValor('porc_sexo_hombre', data["porc_sexo_hombre"]),
+            "Porcentaje de mujeres": formatearValor('porc_sexo_mujeres', data["porc_sexo_mujeres"])
         },
         "Demografía y Edad": {
-            "Edad promedio": data["edad_promedio"],
-            "Índice de dependencia": data["indice_dependencia"],
-            "Población < 15 años": data["pob_edad_014"],
-            "Población 15-64 años": data["pob_edad_1564"],
-            "Población > 65 años": data["pob_edad_65"]
+            "Edad promedio": formatearValor('edad_promedio', data["edad_promedio"]),
+            "Índice de dependencia": formatearValor('indice_dependencia', data["indice_dependencia"]),
+            "Población < 15 años": formatearValor('pob_edad_014', data["pob_edad_014"]),
+            "Población 15-64 años": formatearValor('pob_edad_1564', data["pob_edad_1564"]),
+            "Población > 65 años": formatearValor('pob_edad_65', data["pob_edad_65"])
         },
         "Educación y Empleo": {
-            "Años promedio de estudio": data["anios_prom_estudio"],
-            "Alfabetismo (%)": data["alfabetismo"],
+            "Años promedio de estudio": formatearValor('anios_prom_estudio', data["anios_prom_estudio"]),
+            "Alfabetismo (%)": formatearValor('alfabetismo', data["alfabetismo"]),
         },
         "Vivienda": {
-            "Total de viviendas particulares": data["viviendas_part"],
-            "Total de hogares": data["total_hogares"],
-            "Promedio de personas por hogar": data["prom_personas_hogar"],
-            "Hogares con jefatura femenina": data["total_jefas_hogar"]
+            "Total de viviendas particulares": formatearValor('viviendas_part', data["viviendas_part"]),
+            "Total de hogares": formatearValor('total_hogares', data["total_hogares"]),
+            "Promedio de personas por hogar": formatearValor('prom_personas_hogar', data["prom_personas_hogar"]),
+            "Hogares con jefatura femenina": formatearValor('total_jefas_hogar', data["total_jefas_hogar"])
         },
         "Etnia y Procedencia": {
-             "Población Maya": data["pob_pueblo_maya"],
-             "Población Garífuna": data["pob_pueblo_garifuna"],
-             "Población Xinca": data["pob_pueblo_xinca"],
-             "Población Afrodescendiente": data["pob_pueblo_afrodescendiente"],
-             "Población Ladina": data["pob_pueblo_ladino"],
-             "Población Extranjera": data["pob_pueblo_extranjero"]
+             "Población Maya": formatearValor('pob_pueblo_maya', data["pob_pueblo_maya"]),
+             "Población Garífuna": formatearValor('pob_pueblo_garifuna', data["pob_pueblo_garifuna"]),
+             "Población Xinca": formatearValor('pob_pueblo_xinca', data["pob_pueblo_xinca"]),
+             "Población Afrodescendiente": formatearValor('pob_pueblo_afrodescendiente', data["pob_pueblo_afrodescendiente"]),
+             "Población Ladina": formatearValor('pob_pueblo_ladino', data["pob_pueblo_ladino"]),
+             "Población Extranjera": formatearValor('pob_pueblo_extranjero', data["pob_pueblo_extranjero"])
         }
     };
 
